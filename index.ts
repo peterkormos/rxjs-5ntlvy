@@ -8,10 +8,11 @@ const szamsor = new Observable<number>((observer) => {
   let counter = 0;
   const intervalID = setInterval(() => {
     counter++;
-    console.warn('Emitting: ', counter);
-    observer.next(counter);
-    if (counter === 5) {
-      observer.error('counter === 5, emitting error');
+    if (counter > 5) {
+      observer.error(`counter: ${counter}, emitting error`);
+    } else {
+      console.warn('Emitting: ', counter);
+      observer.next(counter);
     }
   }, interval);
 
@@ -24,8 +25,14 @@ const szamsor = new Observable<number>((observer) => {
 const subject = new Subject<number>();
 szamsor.subscribe(subject);
 
+const subscription1 = subject.subscribe({
+  next: (res) => console.warn('subscription1 caught: ', res),
+  error: (error) => console.error(error),
+  complete: () => console.log('subscription1 completed...'),
+});
+
 const subscription2 = subject.subscribe({
   next: (res) => console.warn('subscription2 caught: ', res),
   error: (error) => console.error(error),
-  complete: () => console.log('Observable completed...'),
+  complete: () => console.log('subscription2 completed...'),
 });
